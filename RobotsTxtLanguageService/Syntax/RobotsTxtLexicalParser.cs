@@ -96,9 +96,12 @@ namespace RobotsTxtLanguageService.Syntax
     {
         public static SnapshotSpan ReadDelimiter(this ITextSnapshot snapshot, ref SnapshotPoint point)
         {
+            if (point.Position == snapshot.Length)
+                return new SnapshotSpan(point, 0);
+
             var @char = point.GetChar();
 
-            if (point.Position == snapshot.Length || @char != ':')
+            if (@char != ':')
                 return new SnapshotSpan(point, 0);
 
             point = point + 1;

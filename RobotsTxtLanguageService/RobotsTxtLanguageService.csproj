@@ -46,6 +46,8 @@
     <Compile Include="Classification\RobotsTxtClassifierFormat.cs" />
     <Compile Include="Classification\RobotsTxtClassifierProvider.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="QuickInfo\RobotsTxtQuickInfoProvider.cs" />
+    <Compile Include="QuickInfo\QuickInfoContent.cs" />
     <Compile Include="RobotsTxtContentType.cs" />
     <Compile Include="RobotsTxtContentTypeNames.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,12 +65,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="BracketMatching\" />
     <Folder Include="CodeFixes\" />
     <Folder Include="CodeRefactorings\" />
     <Folder Include="Diagnostics\" />
     <Folder Include="Outlining\" />
-    <Folder Include="QuickInfo\" />
     <Folder Include="ReferenceHighlighting\" />
     <Folder Include="SuggestedActions\" />
   </ItemGroup>
