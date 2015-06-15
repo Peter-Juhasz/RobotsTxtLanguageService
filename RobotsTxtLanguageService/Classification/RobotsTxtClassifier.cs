@@ -80,6 +80,9 @@ namespace RobotsTxtLanguageService
                                     {
                                         edit.Replace(indent, referenceIndent.GetText());
 
+                                        if (record.NameToken.Span.Span.End != record.DelimiterToken.Span.Span.Start)
+                                            edit.Delete(new SnapshotSpan(record.NameToken.Span.Span.End, record.DelimiterToken.Span.Span.Start));
+
                                         edit.Apply();
                                     }
                                 }
