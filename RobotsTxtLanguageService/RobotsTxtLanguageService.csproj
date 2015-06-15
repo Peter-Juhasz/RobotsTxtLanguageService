@@ -45,6 +45,12 @@
     <Compile Include="Classification\RobotsTxtClassifierClassificationDefinition.cs" />
     <Compile Include="Classification\RobotsTxtClassifierFormat.cs" />
     <Compile Include="Classification\RobotsTxtClassifierProvider.cs" />
+    <Compile Include="Diagnostics\DiagnosticErrorTag.cs" />
+    <Compile Include="Diagnostics\IDiagnosticAnalyzer.cs" />
+    <Compile Include="Diagnostics\RobotsTxtErrorTagger.cs" />
+    <Compile Include="Diagnostics\ISyntaxNodeAnalyzer.cs" />
+    <Compile Include="Diagnostics\RobotsTxtRecordNameAnalyzer.cs" />
+    <Compile Include="Diagnostics\RobotsTxtRecordSyntaxAnalyzer.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="QuickInfo\RobotsTxtQuickInfoProvider.cs" />
     <Compile Include="QuickInfo\QuickInfoContent.cs" />
@@ -68,7 +74,6 @@
   <ItemGroup>
     <Folder Include="CodeFixes\" />
     <Folder Include="CodeRefactorings\" />
-    <Folder Include="Diagnostics\" />
     <Folder Include="Outlining\" />
     <Folder Include="SuggestedActions\" />
   </ItemGroup>
