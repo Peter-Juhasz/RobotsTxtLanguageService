@@ -11,15 +11,15 @@ namespace RobotsTxtLanguageService.Diagnostics
     internal sealed class RobotsTxtRecordNameAnalyzer : ISyntaxNodeAnalyzer<RobotsTxtRecordSyntax>
     {
         public const string UnknownRecord = "UnknownRecord";
-
-        private static readonly IReadOnlyCollection<string> WellKnownRecordNames = new[] { "user-agent", "allow", "disallow" };
-
+        
         public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtRecordSyntax property)
         {
             // delimiter missing
             string name = property.NameToken.Value;
 
-            if (!WellKnownRecordNames.Contains(name, StringComparer.InvariantCultureIgnoreCase))
+            if (!SyntaxFacts.WellKnownRecordNames
+                    .Union(SyntaxFacts.ExtensionRecordNames)
+                    .Contains(name, StringComparer.InvariantCultureIgnoreCase))
             {
                 yield return new TagSpan<IErrorTag>(
                     property.NameToken.Span.Span,

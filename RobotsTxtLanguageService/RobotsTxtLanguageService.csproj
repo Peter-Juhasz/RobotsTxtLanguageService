@@ -64,6 +64,7 @@
     <Compile Include="Syntax\RobotsTxtLexicalParser.cs" />
     <Compile Include="Syntax\RobotsTxtRecordSyntax.cs" />
     <Compile Include="Syntax\SnapshotToken.cs" />
+    <Compile Include="Syntax\SyntaxFacts.cs" />
     <Compile Include="Syntax\SyntaxNode.cs" />
     <Compile Include="Syntax\SyntaxTree.cs" />
   </ItemGroup>

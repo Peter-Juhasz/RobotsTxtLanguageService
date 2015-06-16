@@ -45,7 +45,7 @@ namespace RobotsTxtLanguageService.Syntax
                 char first = cursor.GetChar();
 
                 // comment
-                if (first == '#')
+                if (first == SyntaxFacts.Comment)
                 {
                     SnapshotToken commentToken = new SnapshotToken(snapshot.ReadComment(ref cursor), _commentType);
                     leadingTrivia.Add(commentToken);
@@ -101,7 +101,7 @@ namespace RobotsTxtLanguageService.Syntax
 
             var @char = point.GetChar();
 
-            if (@char != ':')
+            if (@char != SyntaxFacts.NameValueDelimiter)
                 return new SnapshotSpan(point, 0);
 
             point = point + 1;
@@ -109,7 +109,7 @@ namespace RobotsTxtLanguageService.Syntax
         }
         public static SnapshotSpan ReadRecordName(this ITextSnapshot snapshot, ref SnapshotPoint point)
         {
-            return snapshot.ReadToCommentOrLineEndWhile(ref point, c => c != ':');
+            return snapshot.ReadToCommentOrLineEndWhile(ref point, c => c != SyntaxFacts.NameValueDelimiter);
         }
         public static SnapshotSpan ReadRecordValue(this ITextSnapshot snapshot, ref SnapshotPoint point)
         {
@@ -118,7 +118,7 @@ namespace RobotsTxtLanguageService.Syntax
 
         public static SnapshotSpan ReadComment(this ITextSnapshot snapshot, ref SnapshotPoint point)
         {
-            if (point.Position == snapshot.Length || point.GetChar() != '#')
+            if (point.Position == snapshot.Length || point.GetChar() != SyntaxFacts.Comment)
                 return new SnapshotSpan(point, 0);
 
             return snapshot.ReadToLineEndWhile(ref point, _ => true);
@@ -126,7 +126,7 @@ namespace RobotsTxtLanguageService.Syntax
 
         public static SnapshotSpan ReadToCommentOrLineEndWhile(this ITextSnapshot snapshot, ref SnapshotPoint point, Predicate<char> predicate)
         {
-            return snapshot.ReadToLineEndWhile(ref point, c => c != '#' && predicate(c));
+            return snapshot.ReadToLineEndWhile(ref point, c => c != SyntaxFacts.Comment && predicate(c));
         }
     }
 }
