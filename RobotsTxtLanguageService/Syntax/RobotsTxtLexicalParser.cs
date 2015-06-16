@@ -33,11 +33,11 @@ namespace RobotsTxtLanguageService.Syntax
 
             List<SnapshotToken> leadingTrivia = new List<SnapshotToken>();
             RobotsTxtRecordSyntax currentRecord = new RobotsTxtRecordSyntax();
-            bool lastLineWasUserAgent = false;
+            bool lastLineWasBlankLine = false;
             
             foreach (ITextSnapshotLine line in snapshot.Lines)
             {
-                bool isUserAgent = false;
+                bool isBlankLine = false;
 
                 SnapshotPoint cursor = line.Start;
                 snapshot.ReadWhiteSpace(ref cursor); // skip white space
@@ -69,8 +69,7 @@ namespace RobotsTxtLanguageService.Syntax
                     SnapshotToken name = new SnapshotToken(snapshot.ReadRecordName(ref cursor), _recordNameType);
 
                     // handle new record
-                    if (!lastLineWasUserAgent &&
-                        name.Value.Equals("User-agent", StringComparison.InvariantCultureIgnoreCase))
+                    if (lastLineWasBlankLine)
                     {
                         if (currentRecord.Lines.Any())
                         {
@@ -78,7 +77,7 @@ namespace RobotsTxtLanguageService.Syntax
                             currentRecord = new RobotsTxtRecordSyntax { Document = root };
                         }
 
-                        isUserAgent = true;
+                        isBlankLine = true;
                     }
 
                     snapshot.ReadWhiteSpace(ref cursor);
@@ -109,7 +108,7 @@ namespace RobotsTxtLanguageService.Syntax
                 else
                     ; // TODO: report error
 
-                lastLineWasUserAgent = isUserAgent;
+                lastLineWasBlankLine = isBlankLine;
             }
 
             if (currentRecord != null && leadingTrivia.Any())

@@ -47,6 +47,7 @@
     <Compile Include="Classification\RobotsTxtClassifierProvider.cs" />
     <Compile Include="Diagnostics\DiagnosticErrorTag.cs" />
     <Compile Include="Diagnostics\IDiagnosticAnalyzer.cs" />
+    <Compile Include="Diagnostics\UserAgentMustBeTheFirstLineOfARecord.cs" />
     <Compile Include="Diagnostics\RobotsTxtErrorTagger.cs" />
     <Compile Include="Diagnostics\ISyntaxNodeAnalyzer.cs" />
     <Compile Include="Diagnostics\RobotsTxtLineValueAnalyzer.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Syntax\SyntaxTree.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -99,6 +101,10 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Interactive, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ix-Main.1.2.3\lib\net45\System.Interactive.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
