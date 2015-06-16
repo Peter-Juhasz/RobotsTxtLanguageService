@@ -8,7 +8,7 @@ namespace RobotsTxtLanguageService.Diagnostics
     [ExportDiagnosticAnalyzer]
     internal sealed class RobotsTxtLineSyntaxAnalyzer : ISyntaxNodeAnalyzer<RobotsTxtLineSyntax>
     {
-        public const string MissingRecordNameValueDelimiter = "MissingRecordNameValueDelimiter";
+        public const string MissingRecordNameValueDelimiter = nameof(MissingRecordNameValueDelimiter);
 
         public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtLineSyntax line)
         {

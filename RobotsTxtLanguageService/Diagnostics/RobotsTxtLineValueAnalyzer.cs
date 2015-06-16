@@ -26,7 +26,8 @@ namespace RobotsTxtLanguageService.Diagnostics
 
             // allow, disallow
             if (name.Equals("Allow", StringComparison.InvariantCultureIgnoreCase) ||
-                name.Equals("Disallow", StringComparison.InvariantCultureIgnoreCase))
+                name.Equals("Disallow", StringComparison.InvariantCultureIgnoreCase) ||
+                name.Equals("Sitemap", StringComparison.InvariantCultureIgnoreCase))
             {
                 if (line.ValueToken.IsMissing)
                     yield break;

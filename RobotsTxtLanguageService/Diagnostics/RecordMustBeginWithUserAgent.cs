@@ -10,7 +10,7 @@ namespace RobotsTxtLanguageService.Diagnostics
     [ExportDiagnosticAnalyzer]
     internal sealed class RecordMustBeginWithUserAgent : ISyntaxNodeAnalyzer<RobotsTxtRecordSyntax>
     {
-        public const string NotStartsWithUserAgent = nameof(NotStartsWithUserAgent);
+        public const string Id = nameof(RecordMustBeginWithUserAgent);
 
         public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtRecordSyntax record)
         {
@@ -21,7 +21,7 @@ namespace RobotsTxtLanguageService.Diagnostics
             {
                 yield return new TagSpan<IErrorTag>(
                     first.NameToken.Span.Span,
-                    new DiagnosticErrorTag(PredefinedErrorTypeNames.SyntaxError, NotStartsWithUserAgent, "Records must start with a User-agent line.")
+                    new DiagnosticErrorTag(PredefinedErrorTypeNames.SyntaxError, Id, "Records must start with a User-agent field.")
                 );
             }
         }
