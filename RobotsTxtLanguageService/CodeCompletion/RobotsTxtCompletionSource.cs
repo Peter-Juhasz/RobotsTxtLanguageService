@@ -2,6 +2,8 @@
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using RobotsTxtLanguageService.Documentation;
+using RobotsTxtLanguageService.Syntax;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -45,38 +47,83 @@ namespace RobotsTxtLanguageService.CodeCompletion
             {
                 if (_disposed)
                     return;
-                
-                List<Completion> completions = new List<Completion>();
-                foreach (var item in RobotsTxtDocumentation.BuiltInRecordDocumentations)
-                {
-                    completions.Add(new Completion(item.Key, item.Key, item.Value, _glyph, item.Key));
-                }
 
+                // get snapshot
                 ITextSnapshot snapshot = _buffer.CurrentSnapshot;
                 var triggerPoint = session.GetTriggerPoint(snapshot);
-
                 if (triggerPoint == null)
                     return;
 
-                var line = triggerPoint.Value.GetContainingLine();
-                string text = line.GetText();
-                int index = text.IndexOf(':');
-                int hash = text.IndexOf('#');
-                SnapshotPoint start = triggerPoint.Value;
+                // get or compute syntax tree
+                SyntaxTree syntaxTree = snapshot.GetSyntaxTree();
+                RobotsTxtDocumentSyntax root = syntaxTree.Root as RobotsTxtDocumentSyntax;
 
-                if (hash > -1 && hash < triggerPoint.Value.Position || (index > -1 && (start - line.Start.Position) > index))
-                    return;
+                // find line
+                var lineSyntax = root.Records
+                    .SelectMany(r => r.Lines)
+                    .FirstOrDefault(l => l.Span.ContainsOrEndsWith(triggerPoint.Value));
 
-                while (start > line.Start && !char.IsWhiteSpace((start - 1).GetChar()))
+                if (lineSyntax != null)
                 {
-                    start -= 1;
+                    // complete existing field
+                    if (lineSyntax.NameToken.Span.Span.ContainsOrEndsWith(triggerPoint.Value))
+                    {
+                        IList<Completion> completions = new List<Completion>();
+
+                        // applicable to
+                        ITrackingSpan applicableTo = snapshot.CreateTrackingSpan(lineSyntax.NameToken.Span.Span, SpanTrackingMode.EdgeInclusive);
+
+                        // find lines before
+                        var before = lineSyntax.Record.Lines
+                            .TakeWhile(l => l != lineSyntax)
+                            .ToList();
+
+                        // first line
+                        if (!before.Any())
+                        {
+                            completions.Add(ToCompletion("User-agent"));
+                        }
+
+                        // right after User-agent
+                        if (before.All(l => l.NameToken.Value.Equals("User-agent", StringComparison.InvariantCultureIgnoreCase)))
+                        {
+                            completions.Add(ToCompletion("User-agent"));
+                            completions.Add(ToCompletion("Allow"));
+                            completions.Add(ToCompletion("Disallow"));
+                            completions.Add(ToCompletion("Sitemap"));
+                            completions.Add(ToCompletion("Host"));
+                            completions.Add(ToCompletion("Crawl-delay"));
+                        }
+
+                        // any other case
+                        else
+                        {
+                            completions.Add(ToCompletion("Allow"));
+                            completions.Add(ToCompletion("Disallow"));
+                            completions.Add(ToCompletion("Sitemap"));
+
+                            if (!before.Any(l => l.NameToken.Value.Equals("Host", StringComparison.InvariantCultureIgnoreCase)))
+                                completions.Add(ToCompletion("Host"));
+
+                            if (!before.Any(l => l.NameToken.Value.Equals("Crawl-delay", StringComparison.InvariantCultureIgnoreCase)))
+                                completions.Add(ToCompletion("Crawl-delay"));
+                        }
+                        
+                        completionSets.Add(
+                            new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>())
+                        );
+                    }
                 }
+            }
 
-                var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint.Value), SpanTrackingMode.EdgeInclusive);
+            private Completion ToCompletion(string field)
+            {
+                string documentation;
+                if (!RobotsTxtDocumentation.BuiltInRecordDocumentations.TryGetValue(field, out documentation))
+                if (!RobotsTxtDocumentation.ExtensionRecordDocumentations.TryGetValue(field, out documentation))
+                    documentation = null;
 
-                completionSets.Add(
-                    new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>())
-                );
+                return new Completion(field, field, documentation, _glyph, field);
             }
 
             public void Dispose()

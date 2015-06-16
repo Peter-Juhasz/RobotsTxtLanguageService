@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.Text;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace RobotsTxtLanguageService
@@ -11,6 +12,11 @@ namespace RobotsTxtLanguageService
                 ? source
                 : second
             ;
+        }
+
+        public static bool ContainsOrEndsWith(this SnapshotSpan span, SnapshotPoint point)
+        {
+            return span.Contains(point) || span.End == point;
         }
     }
 }

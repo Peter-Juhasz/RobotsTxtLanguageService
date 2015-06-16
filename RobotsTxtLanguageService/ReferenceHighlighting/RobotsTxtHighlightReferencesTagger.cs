@@ -56,7 +56,7 @@ namespace RobotsTxtLanguageService
                 // find section
                 RobotsTxtLineSyntax line = root.Records
                     .SelectMany(r => r.Lines)
-                    .FirstOrDefault(s => s.NameToken.Span.Span.Contains(caret));
+                    .FirstOrDefault(s => s.NameToken.Span.Span.ContainsOrEndsWith(caret));
 
                 // show references
                 if (line != null)
