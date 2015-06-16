@@ -86,10 +86,15 @@ namespace RobotsTxtLanguageService.CodeCompletion
                             handled = StartSession();
                             break;
                         case VSConstants.VSStd2KCmdID.RETURN:
-                            handled = Complete(false);
+                            handled = Complete();
                             break;
                         case VSConstants.VSStd2KCmdID.TAB:
-                            handled = Complete(true);
+                            handled = Complete();
+                            break;
+                        case VSConstants.VSStd2KCmdID.TYPECHAR:
+                            char ch = GetTypeChar(pvaIn);
+                            if (!Char.IsLetter(ch) && ch != '-')
+                                Complete();
                             break;
                         case VSConstants.VSStd2KCmdID.CANCEL:
                             handled = Cancel();
@@ -108,12 +113,14 @@ namespace RobotsTxtLanguageService.CodeCompletion
                         {
                             case VSConstants.VSStd2KCmdID.TYPECHAR:
                                 char ch = GetTypeChar(pvaIn);
-                                if (ch == ':')
-                                    Complete(true);
-                                else if (!char.IsPunctuation(ch) && !char.IsControl(ch))
-                                    StartSession();
-                                else if (_currentSession != null)
-                                    Filter();
+
+                                if (Char.IsLetter(ch) || ch == '-')
+                                {
+                                    if (_currentSession != null)
+                                        Filter();
+                                    else
+                                        StartSession();
+                                }
                                 break;
                             case VSConstants.VSStd2KCmdID.BACKSPACE:
                                 if (_currentSession == null)
@@ -147,21 +154,19 @@ namespace RobotsTxtLanguageService.CodeCompletion
                 return true;
             }
 
-            bool Complete(bool force)
+            bool Complete()
             {
                 if (_currentSession == null)
                     return false;
 
-                if (!_currentSession.SelectedCompletionSet.SelectionStatus.IsSelected && !force)
+                if (!_currentSession.SelectedCompletionSet.SelectionStatus.IsSelected)
                 {
                     _currentSession.Dismiss();
                     return false;
                 }
-                else
-                {
-                    _currentSession.Commit();
-                    return true;
-                }
+
+                _currentSession.Commit();
+                return true;
             }
 
             bool StartSession()
