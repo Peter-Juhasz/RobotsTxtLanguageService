@@ -54,7 +54,7 @@ namespace RobotsTxtLanguageService
                 SnapshotPoint caret = _view.Caret.Position.BufferPosition;
 
                 // find section
-                RobotsTxtRecordSyntax record = root.Records
+                RobotsTxtLineSyntax record = root.Records
                     .FirstOrDefault(s => s.NameToken.Span.Span.Contains(caret));
 
                 // show references

@@ -5,9 +5,9 @@ using System.Linq;
 
 namespace RobotsTxtLanguageService.Syntax
 {
-    public class RobotsTxtRecordSyntax : SyntaxNode
+    public class RobotsTxtLineSyntax : SyntaxNode
     {
-        public RobotsTxtRecordSyntax()
+        public RobotsTxtLineSyntax()
         {
             this.LeadingTrivia = new List<SnapshotToken>();
             this.TrailingTrivia = new List<SnapshotToken>();

@@ -88,7 +88,7 @@ namespace RobotsTxtLanguageService.QuickInfo
                 applicableToSpan = null;
 
                 // find section
-                RobotsTxtRecordSyntax record = root.Records
+                RobotsTxtLineSyntax record = root.Records
                     .FirstOrDefault(s => s.NameToken.Span.Span.Contains(point));
                 
                 if (record != null)

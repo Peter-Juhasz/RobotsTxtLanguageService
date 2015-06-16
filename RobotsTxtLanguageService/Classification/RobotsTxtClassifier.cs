@@ -52,13 +52,13 @@ namespace RobotsTxtLanguageService
                         SyntaxTree syntaxTree = buffer.GetSyntaxTree();
                         RobotsTxtDocumentSyntax root = syntaxTree.Root as RobotsTxtDocumentSyntax;
 
-                        RobotsTxtRecordSyntax record = root.Records
+                        RobotsTxtLineSyntax record = root.Records
                             .FirstOrDefault(p => p.DelimiterToken.Span.Span == change.NewSpan);
 
                         if (record != null)
                         {
                             // find property before
-                            RobotsTxtRecordSyntax before = record.Document.Records
+                            RobotsTxtLineSyntax before = record.Document.Records
                                 .TakeWhile(p => p != record)
                                 .LastOrDefault();
 

@@ -6,11 +6,11 @@ using System.Collections.Generic;
 namespace RobotsTxtLanguageService.Diagnostics
 {
     [ExportDiagnosticAnalyzer]
-    internal sealed class RobotsTxtRecordSyntaxAnalyzer : ISyntaxNodeAnalyzer<RobotsTxtRecordSyntax>
+    internal sealed class RobotsTxtLineSyntaxAnalyzer : ISyntaxNodeAnalyzer<RobotsTxtLineSyntax>
     {
         public const string MissingRecordNameValueDelimiter = "MissingRecordNameValueDelimiter";
 
-        public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtRecordSyntax property)
+        public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtLineSyntax property)
         {
             // delimiter missing
             if (property.DelimiterToken.IsMissing)

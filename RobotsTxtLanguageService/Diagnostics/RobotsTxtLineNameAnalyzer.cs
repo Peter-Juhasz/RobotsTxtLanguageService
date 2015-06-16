@@ -8,11 +8,11 @@ using System;
 namespace RobotsTxtLanguageService.Diagnostics
 {
     [ExportDiagnosticAnalyzer]
-    internal sealed class RobotsTxtRecordNameAnalyzer : ISyntaxNodeAnalyzer<RobotsTxtRecordSyntax>
+    internal sealed class RobotsTxtLineNameAnalyzer : ISyntaxNodeAnalyzer<RobotsTxtLineSyntax>
     {
         public const string UnknownRecord = "UnknownRecord";
         
-        public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtRecordSyntax property)
+        public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtLineSyntax property)
         {
             // delimiter missing
             string name = property.NameToken.Value;

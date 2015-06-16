@@ -49,10 +49,10 @@
     <Compile Include="Diagnostics\IDiagnosticAnalyzer.cs" />
     <Compile Include="Diagnostics\RobotsTxtErrorTagger.cs" />
     <Compile Include="Diagnostics\ISyntaxNodeAnalyzer.cs" />
-    <Compile Include="Diagnostics\RobotsTxtRecordValueAnalyzer.cs" />
-    <Compile Include="Diagnostics\RobotsTxtRecordNameAnalyzer.cs" />
+    <Compile Include="Diagnostics\RobotsTxtLineValueAnalyzer.cs" />
+    <Compile Include="Diagnostics\RobotsTxtLineNameAnalyzer.cs" />
     <Compile Include="Diagnostics\RobotsTxtDocumentSyntaxAnalyzer.cs" />
-    <Compile Include="Diagnostics\RobotsTxtRecordSyntaxAnalyzer.cs" />
+    <Compile Include="Diagnostics\RobotsTxtLineSyntaxAnalyzer.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="QuickInfo\RobotsTxtQuickInfoProvider.cs" />
     <Compile Include="QuickInfo\QuickInfoContent.cs" />
@@ -63,7 +63,7 @@
     <Compile Include="Syntax\ISyntacticParser.cs" />
     <Compile Include="Syntax\RobotsTxtDocumentSyntax.cs" />
     <Compile Include="Syntax\RobotsTxtLexicalParser.cs" />
-    <Compile Include="Syntax\RobotsTxtRecordSyntax.cs" />
+    <Compile Include="Syntax\RobotsTxtLineSyntax.cs" />
     <Compile Include="Syntax\SnapshotToken.cs" />
     <Compile Include="Syntax\SyntaxFacts.cs" />
     <Compile Include="Syntax\SyntaxNode.cs" />

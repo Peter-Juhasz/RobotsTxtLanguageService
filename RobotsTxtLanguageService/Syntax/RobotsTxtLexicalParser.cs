@@ -66,7 +66,7 @@ namespace RobotsTxtLanguageService.Syntax
                     if (!commentToken.IsMissing)
                         trailingTrivia.Add(commentToken);
 
-                    RobotsTxtRecordSyntax property = new RobotsTxtRecordSyntax()
+                    RobotsTxtLineSyntax property = new RobotsTxtLineSyntax()
                     {
                         Document = root,
                         LeadingTrivia = leadingTrivia,

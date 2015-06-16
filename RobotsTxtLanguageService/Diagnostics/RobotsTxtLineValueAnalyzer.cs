@@ -8,14 +8,14 @@ using System;
 namespace RobotsTxtLanguageService.Diagnostics
 {
     [ExportDiagnosticAnalyzer]
-    internal sealed class RobotsTxtRecordValueAnalyzer : ISyntaxNodeAnalyzer<RobotsTxtRecordSyntax>
+    internal sealed class RobotsTxtLineValueAnalyzer : ISyntaxNodeAnalyzer<RobotsTxtLineSyntax>
     {
         public const string MissingRecordValue = nameof(MissingRecordValue);
         public const string UriNotWellFormed = nameof(UriNotWellFormed);
         public const string UniversalMatchInPath = nameof(UniversalMatchInPath);
         public const string InvalidNumber = nameof(InvalidNumber);
 
-        public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtRecordSyntax record)
+        public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtLineSyntax record)
         {
             if (record.DelimiterToken.IsMissing)
                 yield break;

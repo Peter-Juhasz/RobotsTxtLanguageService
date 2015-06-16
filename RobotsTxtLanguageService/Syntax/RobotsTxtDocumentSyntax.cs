@@ -9,12 +9,12 @@ namespace RobotsTxtLanguageService.Syntax
     {
         public RobotsTxtDocumentSyntax()
         {
-            this.Records = new List<RobotsTxtRecordSyntax>();
+            this.Records = new List<RobotsTxtLineSyntax>();
         }
 
         public ITextSnapshot Snapshot { get; set; }
 
-        public IList<RobotsTxtRecordSyntax> Records { get; set; }
+        public IList<RobotsTxtLineSyntax> Records { get; set; }
 
 
         public override SnapshotSpan Span
