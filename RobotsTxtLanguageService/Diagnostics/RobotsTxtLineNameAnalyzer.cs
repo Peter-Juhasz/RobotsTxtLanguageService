@@ -17,8 +17,8 @@ namespace RobotsTxtLanguageService.Diagnostics
             // delimiter missing
             string name = line.NameToken.Value;
 
-            if (!SyntaxFacts.WellKnownLineNames
-                    .Union(SyntaxFacts.ExtensionLineNames)
+            if (!RobotsTxtSyntaxFacts.WellKnownLineNames
+                    .Union(RobotsTxtSyntaxFacts.ExtensionLineNames)
                     .Contains(name, StringComparer.InvariantCultureIgnoreCase))
             {
                 yield return new TagSpan<IErrorTag>(

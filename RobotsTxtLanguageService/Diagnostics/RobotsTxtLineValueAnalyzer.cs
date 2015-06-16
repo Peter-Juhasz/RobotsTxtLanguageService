@@ -71,8 +71,8 @@ namespace RobotsTxtLanguageService.Diagnostics
             }
 
             // any other line
-            else if (!SyntaxFacts.WellKnownLineNames
-                    .Union(SyntaxFacts.ExtensionLineNames)
+            else if (!RobotsTxtSyntaxFacts.WellKnownLineNames
+                    .Union(RobotsTxtSyntaxFacts.ExtensionLineNames)
                     .Contains(name, StringComparer.InvariantCultureIgnoreCase))
             {
                 if (line.ValueToken.IsMissing)

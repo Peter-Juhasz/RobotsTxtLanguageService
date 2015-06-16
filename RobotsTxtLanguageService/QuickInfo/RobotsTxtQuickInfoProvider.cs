@@ -10,6 +10,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using RobotsTxtLanguageService.Documentation;
 
 namespace RobotsTxtLanguageService.QuickInfo
 {
@@ -68,13 +69,6 @@ namespace RobotsTxtLanguageService.QuickInfo
 
             private static readonly DataTemplate Template;
 
-            private static readonly IReadOnlyDictionary<string, string> BuiltInRecordDocumentations = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
-            {
-                { "user-agent", "Identifies to which specific robots the record applies." },
-                { "allow", "Determines whether accessing a URL that matches the corresponding path is allowed or disallowed." },
-                { "disallow", "Determines whether accessing a URL that matches the corresponding path is allowed or disallowed." },
-            };
-        
 
             public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
             {
@@ -104,8 +98,10 @@ namespace RobotsTxtLanguageService.QuickInfo
                     var format = formatMap.GetTextProperties(classificationType);
 
                     // construct content
-                    string documentation = null;
-                    BuiltInRecordDocumentations.TryGetValue(recordName, out documentation);
+                    string documentation;
+                    if (!RobotsTxtDocumentation.BuiltInRecordDocumentations.TryGetValue(recordName, out documentation))
+                    if (!RobotsTxtDocumentation.ExtensionRecordDocumentations.TryGetValue(recordName, out documentation))
+                        documentation = null;
 
                     var content = new QuickInfoContent
                     {

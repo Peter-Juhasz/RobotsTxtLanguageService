@@ -2,7 +2,7 @@
 
 namespace RobotsTxtLanguageService.Syntax
 {
-    internal static class SyntaxFacts
+    internal static class RobotsTxtSyntaxFacts
     {
         public static readonly char Comment = '#';
 

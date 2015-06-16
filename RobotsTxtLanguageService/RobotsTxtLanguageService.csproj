@@ -53,6 +53,7 @@
     <Compile Include="Diagnostics\RobotsTxtLineNameAnalyzer.cs" />
     <Compile Include="Diagnostics\RecordMustBeginWithUserAgent.cs" />
     <Compile Include="Diagnostics\RobotsTxtLineSyntaxAnalyzer.cs" />
+    <Compile Include="Documentation\RobotsTxtDocumentation.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Outlining\RobotsTxtOutliningTagger.cs" />
     <Compile Include="QuickInfo\RobotsTxtQuickInfoProvider.cs" />
@@ -67,7 +68,7 @@
     <Compile Include="Syntax\RobotsTxtLineSyntax.cs" />
     <Compile Include="Syntax\RobotsTxtRecordSyntax.cs" />
     <Compile Include="Syntax\SnapshotToken.cs" />
-    <Compile Include="Syntax\SyntaxFacts.cs" />
+    <Compile Include="Syntax\RobotsTxtSyntaxFacts.cs" />
     <Compile Include="Syntax\SyntaxNode.cs" />
     <Compile Include="Syntax\SyntaxTree.cs" />
   </ItemGroup>
