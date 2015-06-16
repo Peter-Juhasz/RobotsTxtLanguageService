@@ -27,12 +27,12 @@ namespace RobotsTxtLanguageService
             public RobotsTxtOutliningTagger(ITextBuffer buffer)
             {
                 _buffer = buffer;
-                //_buffer.ChangedLowPriority += OnBufferChanged;
+                _buffer.ChangedLowPriority += OnBufferChanged;
             }
 
             private readonly ITextBuffer _buffer;
             
-            /*private void OnBufferChanged(object sender, TextContentChangedEventArgs e)
+            private void OnBufferChanged(object sender, TextContentChangedEventArgs e)
             {
                 if (e.After != _buffer.CurrentSnapshot)
                     return;
@@ -41,23 +41,23 @@ namespace RobotsTxtLanguageService
 
                 // examine old version
                 SyntaxTree oldSyntaxTree = e.Before.GetSyntaxTree();
-                IniDocumentSyntax oldRoot = oldSyntaxTree.Root as IniDocumentSyntax;
+                RobotsTxtDocumentSyntax oldRoot = oldSyntaxTree.Root as RobotsTxtDocumentSyntax;
 
                 // find affected sections
-                IReadOnlyCollection<IniSectionSyntax> oldChangedSections = (
+                IReadOnlyCollection<RobotsTxtRecordSyntax> oldChangedRecords = (
                     from change in e.Changes
-                    from section in oldRoot.Sections
-                    where section.Span.IntersectsWith(change.OldSpan)
-                    orderby section.Span.Start
-                    select section
+                    from record in oldRoot.Records
+                    where record.Span.IntersectsWith(change.OldSpan)
+                    orderby record.Span.Start
+                    select record
                 ).ToList();
 
-                if (oldChangedSections.Any())
+                if (oldChangedRecords.Any())
                 {
                     // compute changed span
                     changedSpan = new SnapshotSpan(
-                        oldChangedSections.First().Span.Start,
-                        oldChangedSections.Last().Span.End
+                        oldChangedRecords.First().Span.Start,
+                        oldChangedRecords.Last().Span.End
                     );
 
                     // translate to new version
@@ -66,23 +66,23 @@ namespace RobotsTxtLanguageService
 
                 // examine current version
                 SyntaxTree syntaxTree = e.After.GetSyntaxTree();
-                IniDocumentSyntax root = syntaxTree.Root as IniDocumentSyntax;
+                RobotsTxtDocumentSyntax root = syntaxTree.Root as RobotsTxtDocumentSyntax;
 
                 // find affected sections
-                IReadOnlyCollection<IniSectionSyntax> changedSections = (
+                IReadOnlyCollection<RobotsTxtRecordSyntax> changedRecords = (
                     from change in e.Changes
-                    from section in root.Sections
-                    where section.Span.IntersectsWith(change.NewSpan)
-                    orderby section.Span.Start
-                    select section
+                    from record in root.Records
+                    where record.Span.IntersectsWith(change.NewSpan)
+                    orderby record.Span.Start
+                    select record
                 ).ToList();
                 
-                if (changedSections.Any())
+                if (changedRecords.Any())
                 {
                     // compute changed span
                     SnapshotSpan newChangedSpan = new SnapshotSpan(
-                        changedSections.First().Span.Start,
-                        changedSections.Last().Span.End
+                        changedRecords.First().Span.Start,
+                        changedRecords.Last().Span.End
                     );
 
                     changedSpan = changedSpan == null
@@ -97,7 +97,7 @@ namespace RobotsTxtLanguageService
                 // notify if any change affects outlining
                 if (changedSpan != null)
                     this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(changedSpan.Value));
-            }*/
+            }
             
 
             public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans)

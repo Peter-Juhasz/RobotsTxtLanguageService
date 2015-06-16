@@ -26,16 +26,18 @@ namespace RobotsTxtLanguageService
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
             return buffer.Properties.GetOrCreateSingletonProperty(
-                creator: () => new IniErrorTagger(analyzers)
+                creator: () => new IniErrorTagger(buffer, analyzers)
             ) as ITagger<T>;
         }
 
 
         private sealed class IniErrorTagger : ITagger<IErrorTag>
         {
-            public IniErrorTagger(IEnumerable<IDiagnosticAnalyzer> analyzers)
+            public IniErrorTagger(ITextBuffer buffer, IEnumerable<IDiagnosticAnalyzer> analyzers)
             {
                 _analyzers = analyzers;
+
+                buffer.ChangedLowPriority += OnBufferChanged;
             }
 
             private readonly IEnumerable<IDiagnosticAnalyzer> _analyzers;
@@ -70,6 +72,75 @@ namespace RobotsTxtLanguageService
             }
 
             public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+
+
+            private void OnBufferChanged(object sender, TextContentChangedEventArgs e)
+            {
+                ITextBuffer buffer = sender as ITextBuffer;
+                if (e.After != buffer.CurrentSnapshot)
+                    return;
+
+                SnapshotSpan? changedSpan = null;
+
+                // examine old version
+                SyntaxTree oldSyntaxTree = e.Before.GetSyntaxTree();
+                RobotsTxtDocumentSyntax oldRoot = oldSyntaxTree.Root as RobotsTxtDocumentSyntax;
+
+                // find affected sections
+                IReadOnlyCollection<RobotsTxtRecordSyntax> oldChangedRecords = (
+                    from change in e.Changes
+                    from record in oldRoot.Records
+                    where record.Span.IntersectsWith(change.OldSpan)
+                    orderby record.Span.Start
+                    select record
+                ).ToList();
+
+                if (oldChangedRecords.Any())
+                {
+                    // compute changed span
+                    changedSpan = new SnapshotSpan(
+                        oldChangedRecords.First().Span.Start,
+                        oldChangedRecords.Last().Span.End
+                    );
+
+                    // translate to new version
+                    changedSpan = changedSpan.Value.TranslateTo(e.After, SpanTrackingMode.EdgeInclusive);
+                }
+
+                // examine current version
+                SyntaxTree syntaxTree = e.After.GetSyntaxTree();
+                RobotsTxtDocumentSyntax root = syntaxTree.Root as RobotsTxtDocumentSyntax;
+
+                // find affected sections
+                IReadOnlyCollection<RobotsTxtRecordSyntax> changedRecords = (
+                    from change in e.Changes
+                    from record in root.Records
+                    where record.Span.IntersectsWith(change.NewSpan)
+                    orderby record.Span.Start
+                    select record
+                ).ToList();
+
+                if (changedRecords.Any())
+                {
+                    // compute changed span
+                    SnapshotSpan newChangedSpan = new SnapshotSpan(
+                        changedRecords.First().Span.Start,
+                        changedRecords.Last().Span.End
+                    );
+
+                    changedSpan = changedSpan == null
+                        ? newChangedSpan
+                        : new SnapshotSpan(
+                            changedSpan.Value.Start < newChangedSpan.Start ? changedSpan.Value.Start : newChangedSpan.Start,
+                            changedSpan.Value.End > newChangedSpan.End ? changedSpan.Value.End : newChangedSpan.End
+                        )
+                    ;
+                }
+
+                // notify if any change affects outlining
+                if (changedSpan != null)
+                    this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(changedSpan.Value));
+            }
         }
     }
 }

@@ -44,7 +44,15 @@ namespace RobotsTxtLanguageService.Syntax
 
                 // skip blank lines
                 if (cursor == line.End)
+                {
+                    if (currentRecord.Lines.Any())
+                    {
+                        root.Records.Add(currentRecord);
+                        currentRecord = new RobotsTxtRecordSyntax { Document = root };
+                    }
+
                     continue;
+                }
 
                 char first = cursor.GetChar();
 
@@ -64,8 +72,11 @@ namespace RobotsTxtLanguageService.Syntax
                     if (!lastLineWasUserAgent &&
                         name.Value.Equals("User-agent", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        root.Records.Add(currentRecord);
-                        currentRecord = new RobotsTxtRecordSyntax { Document = root };
+                        if (currentRecord.Lines.Any())
+                        {
+                            root.Records.Add(currentRecord);
+                            currentRecord = new RobotsTxtRecordSyntax { Document = root };
+                        }
 
                         isUserAgent = true;
                     }
