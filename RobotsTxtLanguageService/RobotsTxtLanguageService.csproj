@@ -49,6 +49,7 @@
     <Compile Include="Diagnostics\IDiagnosticAnalyzer.cs" />
     <Compile Include="Diagnostics\RobotsTxtErrorTagger.cs" />
     <Compile Include="Diagnostics\ISyntaxNodeAnalyzer.cs" />
+    <Compile Include="Diagnostics\RobotsTxtRecordValueAnalyzer.cs" />
     <Compile Include="Diagnostics\RobotsTxtRecordNameAnalyzer.cs" />
     <Compile Include="Diagnostics\RobotsTxtDocumentSyntaxAnalyzer.cs" />
     <Compile Include="Diagnostics\RobotsTxtRecordSyntaxAnalyzer.cs" />

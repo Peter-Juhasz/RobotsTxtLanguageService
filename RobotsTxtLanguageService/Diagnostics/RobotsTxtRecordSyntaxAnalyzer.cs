@@ -9,7 +9,6 @@ namespace RobotsTxtLanguageService.Diagnostics
     internal sealed class RobotsTxtRecordSyntaxAnalyzer : ISyntaxNodeAnalyzer<RobotsTxtRecordSyntax>
     {
         public const string MissingRecordNameValueDelimiter = "MissingRecordNameValueDelimiter";
-        public const string MissingRecordValue = "MissingRecordValue";
 
         public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtRecordSyntax property)
         {
@@ -19,15 +18,6 @@ namespace RobotsTxtLanguageService.Diagnostics
                 yield return new TagSpan<IErrorTag>(
                     property.DelimiterToken.Span.Span,
                     new DiagnosticErrorTag(PredefinedErrorTypeNames.SyntaxError, MissingRecordNameValueDelimiter, "':' expected")
-                );
-            }
-
-            // value missing
-            else if (property.ValueToken.IsMissing)
-            {
-                yield return new TagSpan<IErrorTag>(
-                    property.ValueToken.Span.Span,
-                    new DiagnosticErrorTag(PredefinedErrorTypeNames.SyntaxError, MissingRecordValue, "Record value expected")
                 );
             }
         }
