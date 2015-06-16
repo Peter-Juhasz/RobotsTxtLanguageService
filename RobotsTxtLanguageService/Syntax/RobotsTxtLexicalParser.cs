@@ -32,9 +32,13 @@ namespace RobotsTxtLanguageService.Syntax
             RobotsTxtDocumentSyntax root = new RobotsTxtDocumentSyntax() { Snapshot = snapshot };
 
             List<SnapshotToken> leadingTrivia = new List<SnapshotToken>();
-
+            RobotsTxtRecordSyntax currentRecord = new RobotsTxtRecordSyntax();
+            bool lastLineWasUserAgent = false;
+            
             foreach (ITextSnapshotLine line in snapshot.Lines)
             {
+                bool isUserAgent = false;
+
                 SnapshotPoint cursor = line.Start;
                 snapshot.ReadWhiteSpace(ref cursor); // skip white space
 
@@ -55,6 +59,17 @@ namespace RobotsTxtLanguageService.Syntax
                 else if (Char.IsLetter(first))
                 {
                     SnapshotToken name = new SnapshotToken(snapshot.ReadRecordName(ref cursor), _recordNameType);
+
+                    // handle new record
+                    if (!lastLineWasUserAgent &&
+                        name.Value.Equals("User-agent", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        root.Records.Add(currentRecord);
+                        currentRecord = new RobotsTxtRecordSyntax { Document = root };
+
+                        isUserAgent = true;
+                    }
+
                     snapshot.ReadWhiteSpace(ref cursor);
                     SnapshotToken delimiter = new SnapshotToken(snapshot.ReadDelimiter(ref cursor), _delimiterType);
                     snapshot.ReadWhiteSpace(ref cursor);
@@ -66,27 +81,32 @@ namespace RobotsTxtLanguageService.Syntax
                     if (!commentToken.IsMissing)
                         trailingTrivia.Add(commentToken);
 
-                    RobotsTxtLineSyntax property = new RobotsTxtLineSyntax()
+                    RobotsTxtLineSyntax lineSyntax = new RobotsTxtLineSyntax()
                     {
-                        Document = root,
+                        Record = currentRecord,
                         LeadingTrivia = leadingTrivia,
                         NameToken = name,
                         DelimiterToken = delimiter,
                         ValueToken = value,
                         TrailingTrivia = trailingTrivia,
                     };
-                    root.Records.Add(property);
+                    currentRecord.Lines.Add(lineSyntax);
                     leadingTrivia = new List<SnapshotToken>();
                 }
 
                 // error
                 else
                     ; // TODO: report error
+
+                lastLineWasUserAgent = isUserAgent;
             }
 
-            if (root.Records.Any() && leadingTrivia.Any())
+            if (currentRecord != null && leadingTrivia.Any())
                 foreach (var trivia in leadingTrivia)
-                    root.Records.Last().TrailingTrivia.Add(trivia);
+                    currentRecord.TrailingTrivia.Add(trivia);
+
+            if (currentRecord.Lines.Any())
+                root.Records.Add(currentRecord);
             
             return new SyntaxTree(snapshot, root);
         }

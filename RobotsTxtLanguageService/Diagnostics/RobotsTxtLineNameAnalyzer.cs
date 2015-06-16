@@ -10,20 +10,20 @@ namespace RobotsTxtLanguageService.Diagnostics
     [ExportDiagnosticAnalyzer]
     internal sealed class RobotsTxtLineNameAnalyzer : ISyntaxNodeAnalyzer<RobotsTxtLineSyntax>
     {
-        public const string UnknownRecord = "UnknownRecord";
+        public const string UnknownLine = nameof(UnknownLine);
         
-        public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtLineSyntax property)
+        public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtLineSyntax line)
         {
             // delimiter missing
-            string name = property.NameToken.Value;
+            string name = line.NameToken.Value;
 
-            if (!SyntaxFacts.WellKnownRecordNames
-                    .Union(SyntaxFacts.ExtensionRecordNames)
+            if (!SyntaxFacts.WellKnownLineNames
+                    .Union(SyntaxFacts.ExtensionLineNames)
                     .Contains(name, StringComparer.InvariantCultureIgnoreCase))
             {
                 yield return new TagSpan<IErrorTag>(
-                    property.NameToken.Span.Span,
-                    new DiagnosticErrorTag(PredefinedErrorTypeNames.OtherError, UnknownRecord, $"Unknown record '{name}'")
+                    line.NameToken.Span.Span,
+                    new DiagnosticErrorTag(PredefinedErrorTypeNames.OtherError, UnknownLine, $"Unknown line '{name}'")
                 );
             }
         }

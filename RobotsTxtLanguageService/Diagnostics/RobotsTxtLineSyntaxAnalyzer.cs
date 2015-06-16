@@ -10,13 +10,13 @@ namespace RobotsTxtLanguageService.Diagnostics
     {
         public const string MissingRecordNameValueDelimiter = "MissingRecordNameValueDelimiter";
 
-        public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtLineSyntax property)
+        public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtLineSyntax line)
         {
             // delimiter missing
-            if (property.DelimiterToken.IsMissing)
+            if (line.DelimiterToken.IsMissing)
             {
                 yield return new TagSpan<IErrorTag>(
-                    property.DelimiterToken.Span.Span,
+                    line.DelimiterToken.Span.Span,
                     new DiagnosticErrorTag(PredefinedErrorTypeNames.SyntaxError, MissingRecordNameValueDelimiter, "':' expected")
                 );
             }

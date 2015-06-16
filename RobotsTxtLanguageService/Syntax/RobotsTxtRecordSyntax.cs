@@ -1,27 +1,22 @@
 ﻿using Microsoft.VisualStudio.Text;
 using System.Collections.Generic;
-using System;
 using System.Linq;
 
 namespace RobotsTxtLanguageService.Syntax
 {
-    public class RobotsTxtLineSyntax : SyntaxNode
+    public class RobotsTxtRecordSyntax : SyntaxNode
     {
-        public RobotsTxtLineSyntax()
+        public RobotsTxtRecordSyntax()
         {
+            this.Lines = new List<RobotsTxtLineSyntax>();
             this.LeadingTrivia = new List<SnapshotToken>();
             this.TrailingTrivia = new List<SnapshotToken>();
         }
+
+        public RobotsTxtDocumentSyntax Document { get; set; }
+
+        public IList<RobotsTxtLineSyntax> Lines { get; set; }
         
-        public RobotsTxtRecordSyntax Record { get; set; }
-
-
-        public SnapshotToken NameToken { get; set; }
-
-        public SnapshotToken DelimiterToken { get; set; }
-
-        public SnapshotToken ValueToken { get; set; }
-
 
         public IList<SnapshotToken> LeadingTrivia { get; set; }
 
@@ -32,7 +27,7 @@ namespace RobotsTxtLanguageService.Syntax
         {
             get
             {
-                return new SnapshotSpan(this.NameToken.Span.Span.Start, this.ValueToken.Span.Span.End);
+                return new SnapshotSpan(this.Lines.First().Span.Start, this.Lines.Last().Span.End);
             }
         }
 
@@ -41,8 +36,13 @@ namespace RobotsTxtLanguageService.Syntax
             get
             {
                 return new SnapshotSpan(
-                    (this.LeadingTrivia.FirstOrDefault() ?? this.NameToken).Span.Span.Start,
-                    (this.TrailingTrivia.LastOrDefault() ?? this.ValueToken).Span.Span.End
+                    (this.LeadingTrivia.FirstOrDefault()
+                        ?? this.Lines.FirstOrDefault()?.NameToken
+                    ).Span.Span.Start,
+                    (this.TrailingTrivia.LastOrDefault()
+                        ?? this.Lines.LastOrDefault()?.TrailingTrivia.LastOrDefault()
+                        ?? this.Lines.LastOrDefault()?.ValueToken
+                    ).Span.Span.End
                 );
             }
         }
@@ -51,13 +51,13 @@ namespace RobotsTxtLanguageService.Syntax
         {
             get
             {
-                return this.Record;
+                return this.Document;
             }
         }
 
         public override IEnumerable<SyntaxNode> Descendants()
         {
-            yield break;
+            return this.Lines;
         }
 
 
@@ -65,10 +65,9 @@ namespace RobotsTxtLanguageService.Syntax
         {
             foreach (SnapshotToken token in this.LeadingTrivia)
                 yield return token;
-
-            yield return this.NameToken;
-            yield return this.DelimiterToken;
-            yield return this.ValueToken;
+            
+            foreach (SnapshotToken token in this.Lines.SelectMany(p => p.GetTokens()))
+                yield return token;
 
             foreach (SnapshotToken token in this.TrailingTrivia)
                 yield return token;

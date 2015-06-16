@@ -54,19 +54,21 @@ namespace RobotsTxtLanguageService
                 SnapshotPoint caret = _view.Caret.Position.BufferPosition;
 
                 // find section
-                RobotsTxtLineSyntax record = root.Records
+                RobotsTxtLineSyntax line = root.Records
+                    .SelectMany(r => r.Lines)
                     .FirstOrDefault(s => s.NameToken.Span.Span.Contains(caret));
 
                 // show references
-                if (record != null)
+                if (line != null)
                 {
-                    string recordName = record.NameToken.Value;
+                    string recordName = line.NameToken.Value;
 
                     // find references
                     return
                         from r in root.Records
-                        where r.NameToken.Value.Equals(recordName, StringComparison.InvariantCultureIgnoreCase)
-                        select new TagSpan<ITextMarkerTag>(r.NameToken.Span.Span, Tag)
+                        from l in r.Lines
+                        where l.NameToken.Value.Equals(recordName, StringComparison.InvariantCultureIgnoreCase)
+                        select new TagSpan<ITextMarkerTag>(l.NameToken.Span.Span, Tag)
                     ;
                 }
                 

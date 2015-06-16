@@ -52,14 +52,15 @@ namespace RobotsTxtLanguageService
                         SyntaxTree syntaxTree = buffer.GetSyntaxTree();
                         RobotsTxtDocumentSyntax root = syntaxTree.Root as RobotsTxtDocumentSyntax;
 
-                        RobotsTxtLineSyntax record = root.Records
+                        RobotsTxtLineSyntax lineSyntax = root.Records
+                            .SelectMany(r => r.Lines)
                             .FirstOrDefault(p => p.DelimiterToken.Span.Span == change.NewSpan);
 
-                        if (record != null)
+                        if (lineSyntax != null)
                         {
                             // find property before
-                            RobotsTxtLineSyntax before = record.Document.Records
-                                .TakeWhile(p => p != record)
+                            RobotsTxtLineSyntax before = lineSyntax.Record.Lines
+                                .TakeWhile(p => p != lineSyntax)
                                 .LastOrDefault();
 
                             // reference point
@@ -69,10 +70,10 @@ namespace RobotsTxtLanguageService
 
                                 // compare
                                 ITextSnapshotLine referenceLine = referencePoint.GetContainingLine();
-                                ITextSnapshotLine line = record.DelimiterToken.Span.Span.End.GetContainingLine();
+                                ITextSnapshotLine line = lineSyntax.DelimiterToken.Span.Span.End.GetContainingLine();
 
                                 SnapshotSpan referenceIndent = new SnapshotSpan(referenceLine.Start, referencePoint);
-                                SnapshotSpan indent = new SnapshotSpan(line.Start, record.NameToken.Span.Span.Start);
+                                SnapshotSpan indent = new SnapshotSpan(line.Start, lineSyntax.NameToken.Span.Span.Start);
 
                                 if (referenceIndent.GetText() != indent.GetText())
                                 {
@@ -80,8 +81,8 @@ namespace RobotsTxtLanguageService
                                     {
                                         edit.Replace(indent, referenceIndent.GetText());
 
-                                        if (record.NameToken.Span.Span.End != record.DelimiterToken.Span.Span.Start)
-                                            edit.Delete(new SnapshotSpan(record.NameToken.Span.Span.End, record.DelimiterToken.Span.Span.Start));
+                                        if (lineSyntax.NameToken.Span.Span.End != lineSyntax.DelimiterToken.Span.Span.Start)
+                                            edit.Delete(new SnapshotSpan(lineSyntax.NameToken.Span.Span.End, lineSyntax.DelimiterToken.Span.Span.Start));
 
                                         edit.Apply();
                                     }

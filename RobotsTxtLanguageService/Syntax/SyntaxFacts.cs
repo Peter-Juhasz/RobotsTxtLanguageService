@@ -8,8 +8,8 @@ namespace RobotsTxtLanguageService.Syntax
 
         public static readonly char NameValueDelimiter = ':';
         
-        public static readonly IReadOnlyCollection<string> WellKnownRecordNames = new[] { "user-agent", "allow", "disallow" };
+        public static readonly IReadOnlyCollection<string> WellKnownLineNames = new[] { "user-agent", "allow", "disallow" };
 
-        public static readonly IReadOnlyCollection<string> ExtensionRecordNames = new[] { "crawl-delay", "host", "sitemap" };
+        public static readonly IReadOnlyCollection<string> ExtensionLineNames = new[] { "crawl-delay", "host", "sitemap" };
     }
 }
