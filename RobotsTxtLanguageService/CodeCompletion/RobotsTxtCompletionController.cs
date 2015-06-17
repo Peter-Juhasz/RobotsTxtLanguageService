@@ -11,6 +11,8 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using System.IO;
+using System.Linq;
+using RobotsTxtLanguageService.Syntax;
 
 namespace RobotsTxtLanguageService.CodeCompletion
 {
@@ -76,26 +78,27 @@ namespace RobotsTxtLanguageService.CodeCompletion
                 bool handled = false;
                 int hresult = VSConstants.S_OK;
 
-                // 1. Pre-process
+                // pre-process
                 if (pguidCmdGroup == VSConstants.VSStd2K)
                 {
                     switch ((VSConstants.VSStd2KCmdID)nCmdID)
                     {
                         case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
-                        case VSConstants.VSStd2KCmdID.COMPLETEWORD:
+                        case VSConstants.VSStd2KCmdID.COMPLETEWORD: // TODO: Commit if unique
                             handled = StartSession();
                             break;
+
                         case VSConstants.VSStd2KCmdID.RETURN:
-                            handled = Complete();
-                            break;
                         case VSConstants.VSStd2KCmdID.TAB:
                             handled = Complete();
                             break;
+
                         case VSConstants.VSStd2KCmdID.TYPECHAR:
-                            char ch = GetTypeChar(pvaIn);
-                            if (!Char.IsLetter(ch) && ch != '-')
+                            char @char = GetTypeChar(pvaIn);
+                            if (!RobotsTxtSyntaxFacts.IsValidIdentifierCharacter(@char))
                                 Complete();
                             break;
+
                         case VSConstants.VSStd2KCmdID.CANCEL:
                             handled = Cancel();
                             break;
@@ -112,9 +115,9 @@ namespace RobotsTxtLanguageService.CodeCompletion
                         switch ((VSConstants.VSStd2KCmdID)nCmdID)
                         {
                             case VSConstants.VSStd2KCmdID.TYPECHAR:
-                                char ch = GetTypeChar(pvaIn);
+                                char @char = GetTypeChar(pvaIn);
 
-                                if (Char.IsLetter(ch) || ch == '-')
+                                if (RobotsTxtSyntaxFacts.IsValidIdentifierCharacter(@char))
                                 {
                                     if (_currentSession != null)
                                         Filter();
@@ -122,10 +125,8 @@ namespace RobotsTxtLanguageService.CodeCompletion
                                         StartSession();
                                 }
                                 break;
-                            case VSConstants.VSStd2KCmdID.BACKSPACE:
-                                if (_currentSession == null)
-                                    StartSession();
 
+                            case VSConstants.VSStd2KCmdID.BACKSPACE:
                                 Filter();
                                 break;
                         }
@@ -134,7 +135,7 @@ namespace RobotsTxtLanguageService.CodeCompletion
 
                 return hresult;
             }
-
+            
             private void Filter()
             {
                 if (_currentSession == null)
@@ -179,16 +180,10 @@ namespace RobotsTxtLanguageService.CodeCompletion
                 if (!Broker.IsCompletionActive(TextView))
                 {
                     _currentSession = Broker.CreateCompletionSession(TextView, snapshot.CreateTrackingPoint(caret, PointTrackingMode.Positive), true);
-                }
-                else
-                {
-                    _currentSession = Broker.GetSessions(TextView)[0];
-                }
-                _currentSession.Dismissed += (sender, args) => _currentSession = null;
-
-                if (!_currentSession.IsStarted)
+                    _currentSession.Dismissed += (sender, args) => _currentSession = null;
                     _currentSession.Start();
-
+                }
+                
                 return true;
             }
 
@@ -204,6 +199,7 @@ namespace RobotsTxtLanguageService.CodeCompletion
                             return VSConstants.S_OK;
                     }
                 }
+
                 return Next.QueryStatus(pguidCmdGroup, cCmds, prgCmds, pCmdText);
             }
         }

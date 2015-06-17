@@ -144,7 +144,7 @@ namespace RobotsTxtLanguageService.Syntax
         }
         public static SnapshotSpan ReadFieldName(this ITextSnapshot snapshot, ref SnapshotPoint point)
         {
-            return snapshot.ReadToCommentOrLineEndWhile(ref point, c => Char.IsLetterOrDigit(c) || c == '-');
+            return snapshot.ReadToCommentOrLineEndWhile(ref point, RobotsTxtSyntaxFacts.IsValidIdentifierCharacter);
         }
         public static SnapshotSpan ReadFieldValue(this ITextSnapshot snapshot, ref SnapshotPoint point)
         {

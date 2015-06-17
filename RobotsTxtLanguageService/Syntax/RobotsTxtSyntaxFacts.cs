@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace RobotsTxtLanguageService.Syntax
 {
@@ -11,5 +12,10 @@ namespace RobotsTxtLanguageService.Syntax
         public static readonly IReadOnlyCollection<string> WellKnownLineNames = new[] { "user-agent", "allow", "disallow" };
 
         public static readonly IReadOnlyCollection<string> ExtensionLineNames = new[] { "crawl-delay", "host", "sitemap" };
+
+        public static bool IsValidIdentifierCharacter(char ch)
+        {
+            return Char.IsLetterOrDigit(ch) || ch == '-';
+        }
     }
 }

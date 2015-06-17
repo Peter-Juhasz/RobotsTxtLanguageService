@@ -58,35 +58,35 @@ namespace RobotsTxtLanguageService
 
                         if (lineSyntax != null)
                         {
-                            // find property before
-                            RobotsTxtLineSyntax before = lineSyntax.Record.Lines
+                            using (ITextEdit edit = buffer.CreateEdit())
+                            {
+                                // fix indent
+                                // find property before
+                                RobotsTxtLineSyntax before = lineSyntax.Record.Lines
                                 .TakeWhile(p => p != lineSyntax)
                                 .LastOrDefault();
 
-                            // reference point
-                            if (before != null)
-                            {
-                                SnapshotPoint referencePoint = before.NameToken.Span.Span.Start;
-
-                                // compare
-                                ITextSnapshotLine referenceLine = referencePoint.GetContainingLine();
-                                ITextSnapshotLine line = lineSyntax.DelimiterToken.Span.Span.End.GetContainingLine();
-
-                                SnapshotSpan referenceIndent = new SnapshotSpan(referenceLine.Start, referencePoint);
-                                SnapshotSpan indent = new SnapshotSpan(line.Start, lineSyntax.NameToken.Span.Span.Start);
-
-                                if (referenceIndent.GetText() != indent.GetText())
+                                // reference point
+                                if (before != null)
                                 {
-                                    using (ITextEdit edit = buffer.CreateEdit())
-                                    {
+                                    SnapshotPoint referencePoint = before.NameToken.Span.Span.Start;
+
+                                    // compare
+                                    ITextSnapshotLine referenceLine = referencePoint.GetContainingLine();
+                                    ITextSnapshotLine line = lineSyntax.DelimiterToken.Span.Span.End.GetContainingLine();
+
+                                    SnapshotSpan referenceIndent = new SnapshotSpan(referenceLine.Start, referencePoint);
+                                    SnapshotSpan indent = new SnapshotSpan(line.Start, lineSyntax.NameToken.Span.Span.Start);
+                                
+                                    if (indent.GetText() != referenceIndent.GetText())
                                         edit.Replace(indent, referenceIndent.GetText());
-
-                                        if (lineSyntax.NameToken.Span.Span.End != lineSyntax.DelimiterToken.Span.Span.Start)
-                                            edit.Delete(new SnapshotSpan(lineSyntax.NameToken.Span.Span.End, lineSyntax.DelimiterToken.Span.Span.Start));
-
-                                        edit.Apply();
-                                    }
                                 }
+
+                                // remove white space before ':'
+                                if (lineSyntax.NameToken.Span.Span.End != lineSyntax.DelimiterToken.Span.Span.Start)
+                                    edit.Delete(new SnapshotSpan(lineSyntax.NameToken.Span.Span.End, lineSyntax.DelimiterToken.Span.Span.Start));
+
+                                edit.Apply();
                             }
                         }
                     }
