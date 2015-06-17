@@ -32,7 +32,7 @@ namespace RobotsTxtLanguageService.Syntax
             RobotsTxtDocumentSyntax root = new RobotsTxtDocumentSyntax() { Snapshot = snapshot };
 
             List<SnapshotToken> leadingTrivia = new List<SnapshotToken>();
-            RobotsTxtRecordSyntax currentRecord = new RobotsTxtRecordSyntax();
+            RobotsTxtRecordSyntax currentRecord = new RobotsTxtRecordSyntax() { Document = root };
             bool lastLineWasBlankLine = false;
             
             foreach (ITextSnapshotLine line in snapshot.Lines)

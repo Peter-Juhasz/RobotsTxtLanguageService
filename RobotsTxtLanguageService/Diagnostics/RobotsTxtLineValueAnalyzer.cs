@@ -10,7 +10,7 @@ namespace RobotsTxtLanguageService.Diagnostics
     [ExportDiagnosticAnalyzer]
     internal sealed class RobotsTxtLineValueAnalyzer : ISyntaxNodeAnalyzer<RobotsTxtLineSyntax>
     {
-        public const string MissingRecordValue = nameof(MissingRecordValue);
+        public const string MissingFieldValue = nameof(MissingFieldValue);
         public const string UriNotWellFormed = nameof(UriNotWellFormed);
         public const string UniversalMatchInPath = nameof(UniversalMatchInPath);
         public const string InvalidNumber = nameof(InvalidNumber);
@@ -30,7 +30,17 @@ namespace RobotsTxtLanguageService.Diagnostics
                 name.Equals("Sitemap", StringComparison.InvariantCultureIgnoreCase))
             {
                 if (line.ValueToken.IsMissing)
+                {
+                    if (name.Equals("Sitemap", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        yield return new TagSpan<IErrorTag>(
+                            line.ValueToken.Span.Span,
+                            new DiagnosticErrorTag(PredefinedErrorTypeNames.SyntaxError, MissingFieldValue, $"Line value expected")
+                        );
+                    }
+
                     yield break;
+                }
 
                 // not well-formed
                 if (!Uri.IsWellFormedUriString(value, UriKind.Relative))
@@ -80,7 +90,7 @@ namespace RobotsTxtLanguageService.Diagnostics
                 {
                     yield return new TagSpan<IErrorTag>(
                         line.ValueToken.Span.Span,
-                        new DiagnosticErrorTag(PredefinedErrorTypeNames.SyntaxError, MissingRecordValue, $"Line value expected")
+                        new DiagnosticErrorTag(PredefinedErrorTypeNames.SyntaxError, MissingFieldValue, $"Line value expected")
                     );
                 }
             }

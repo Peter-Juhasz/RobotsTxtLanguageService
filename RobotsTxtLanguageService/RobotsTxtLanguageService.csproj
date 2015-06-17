@@ -48,6 +48,7 @@
     <Compile Include="CodeCompletion\RobotsTxtCompletionController.cs" />
     <Compile Include="CodeCompletion\RobotsTxtCompletionSource.cs" />
     <Compile Include="CodeFixes\ICodeFixProvider.cs" />
+    <Compile Include="CodeFixes\ConvertUniversalMatchToRoot.cs" />
     <Compile Include="CodeFixes\SeparateRecordsOrMoveUserAgentToTop.cs" />
     <Compile Include="CodeRefactorings\CodeAction.cs" />
     <Compile Include="CodeRefactorings\ICodeRefactoringProvider.cs" />
