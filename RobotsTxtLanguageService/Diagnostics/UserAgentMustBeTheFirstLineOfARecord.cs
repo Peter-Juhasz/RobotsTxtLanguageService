@@ -10,7 +10,7 @@ namespace RobotsTxtLanguageService.Diagnostics
     [ExportDiagnosticAnalyzer]
     internal sealed class UserAgentMustBeTheFirstLineOfARecord : ISyntaxNodeAnalyzer<RobotsTxtRecordSyntax>
     {
-        public const string UserAgentInTheMiddleOfARecord = nameof(UserAgentInTheMiddleOfARecord);
+        public const string Id = nameof(UserAgentMustBeTheFirstLineOfARecord);
 
         public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtRecordSyntax record)
         {
@@ -27,7 +27,7 @@ namespace RobotsTxtLanguageService.Diagnostics
             {
                 yield return new TagSpan<IErrorTag>(
                     middle.NameToken.Span.Span,
-                    new DiagnosticErrorTag(PredefinedErrorTypeNames.SyntaxError, UserAgentInTheMiddleOfARecord, "Records must be separated by a blank line, or User-agent lines should be at the beginning of the record")
+                    new DiagnosticErrorTag(PredefinedErrorTypeNames.SyntaxError, Id, "Records must be separated by a blank line, or User-agent lines should be at the beginning of the record")
                 );
             }
         }

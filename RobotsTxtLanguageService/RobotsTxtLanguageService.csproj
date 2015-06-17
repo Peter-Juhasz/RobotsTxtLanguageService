@@ -48,6 +48,7 @@
     <Compile Include="CodeCompletion\RobotsTxtCompletionController.cs" />
     <Compile Include="CodeCompletion\RobotsTxtCompletionSource.cs" />
     <Compile Include="CodeFixes\ICodeFixProvider.cs" />
+    <Compile Include="CodeFixes\SeparateRecordsOrMoveUserAgentToTop.cs" />
     <Compile Include="CodeRefactorings\CodeAction.cs" />
     <Compile Include="CodeRefactorings\ICodeRefactoringProvider.cs" />
     <Compile Include="Diagnostics\DiagnosticErrorTag.cs" />
@@ -69,7 +70,7 @@
     <Compile Include="RobotsTxtContentType.cs" />
     <Compile Include="RobotsTxtContentTypeNames.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SuggestedActions\IniSuggestedActions.cs" />
+    <Compile Include="SuggestedActions\RobotsTxtSuggestedActions.cs" />
     <Compile Include="Syntax\ISyntacticParser.cs" />
     <Compile Include="Syntax\RobotsTxtDocumentSyntax.cs" />
     <Compile Include="Syntax\RobotsTxtLexicalParser.cs" />

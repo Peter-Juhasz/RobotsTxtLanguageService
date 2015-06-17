@@ -17,7 +17,7 @@ namespace RobotsTxtLanguageService
     [Export(typeof(ISuggestedActionsSourceProvider))]
     [Name("RobotsTxt Suggested Actions")]
     [ContentType(RobotsTxtContentTypeNames.RobotsTxt)]
-    internal sealed class IniSuggestedActionsProvider : ISuggestedActionsSourceProvider
+    internal sealed class RobotsTxtSuggestedActionsSourceProvider : ISuggestedActionsSourceProvider
     {
 #pragma warning disable 649
 
@@ -36,7 +36,7 @@ namespace RobotsTxtLanguageService
         public ISuggestedActionsSource CreateSuggestedActionsSource(ITextView textView, ITextBuffer textBuffer)
         {
             return textBuffer.Properties.GetOrCreateSingletonProperty(
-                creator: () => new IniSuggestedActions(
+                creator: () => new RobotsTxtSuggestedActions(
                     textView, textBuffer,
                     aggregatorFactoryService.CreateTagAggregator<IErrorTag>(textBuffer),
                     codeFixProviders,
@@ -46,9 +46,9 @@ namespace RobotsTxtLanguageService
         }
 
 
-        private sealed class IniSuggestedActions : ISuggestedActionsSource
+        private sealed class RobotsTxtSuggestedActions : ISuggestedActionsSource
         {
-            public IniSuggestedActions(
+            public RobotsTxtSuggestedActions(
                 ITextView view, ITextBuffer buffer,
                 ITagAggregator<IErrorTag> aggregator,
                 IEnumerable<ICodeFixProvider> codeFixProviders,
