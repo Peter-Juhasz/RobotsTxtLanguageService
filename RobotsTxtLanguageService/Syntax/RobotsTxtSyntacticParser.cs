@@ -18,7 +18,6 @@ namespace RobotsTxtLanguageService.Syntax
             _delimiterType = registry.GetClassificationType("RobotsTxt/Delimiter");
             _recordNameType = registry.GetClassificationType("RobotsTxt/RecordName");
             _recordValueType = registry.GetClassificationType("RobotsTxt/RecordValue");
-
         }
 
         private readonly IClassificationType _commentType;
@@ -66,7 +65,7 @@ namespace RobotsTxtLanguageService.Syntax
                 // record
                 else if (Char.IsLetter(first))
                 {
-                    SnapshotToken name = new SnapshotToken(snapshot.ReadRecordName(ref cursor), _recordNameType);
+                    SnapshotToken name = new SnapshotToken(snapshot.ReadFieldName(ref cursor), _recordNameType);
 
                     // handle new record
                     if (lastLineWasBlankLine)
@@ -83,7 +82,7 @@ namespace RobotsTxtLanguageService.Syntax
                     snapshot.ReadWhiteSpace(ref cursor);
                     SnapshotToken delimiter = new SnapshotToken(snapshot.ReadDelimiter(ref cursor), _delimiterType);
                     snapshot.ReadWhiteSpace(ref cursor);
-                    SnapshotToken value = new SnapshotToken(snapshot.ReadRecordValue(ref cursor), _recordValueType);
+                    SnapshotToken value = new SnapshotToken(snapshot.ReadFieldValue(ref cursor), _recordValueType);
                     snapshot.ReadWhiteSpace(ref cursor);
                     SnapshotToken commentToken = new SnapshotToken(snapshot.ReadComment(ref cursor), _commentType);
 
@@ -143,11 +142,11 @@ namespace RobotsTxtLanguageService.Syntax
             point = point + 1;
             return new SnapshotSpan(point - 1, 1);
         }
-        public static SnapshotSpan ReadRecordName(this ITextSnapshot snapshot, ref SnapshotPoint point)
+        public static SnapshotSpan ReadFieldName(this ITextSnapshot snapshot, ref SnapshotPoint point)
         {
-            return snapshot.ReadToCommentOrLineEndWhile(ref point, c => c != RobotsTxtSyntaxFacts.NameValueDelimiter);
+            return snapshot.ReadToCommentOrLineEndWhile(ref point, c => Char.IsLetterOrDigit(c) || c == '-');
         }
-        public static SnapshotSpan ReadRecordValue(this ITextSnapshot snapshot, ref SnapshotPoint point)
+        public static SnapshotSpan ReadFieldValue(this ITextSnapshot snapshot, ref SnapshotPoint point)
         {
             return snapshot.ReadToCommentOrLineEndWhile(ref point, _ => true);
         }

@@ -47,7 +47,7 @@ namespace RobotsTxtLanguageService.CodeCompletion
             {
                 if (_disposed)
                     return;
-
+                
                 // get snapshot
                 ITextSnapshot snapshot = _buffer.CurrentSnapshot;
                 var triggerPoint = session.GetTriggerPoint(snapshot);
@@ -78,41 +78,102 @@ namespace RobotsTxtLanguageService.CodeCompletion
                             .TakeWhile(l => l != lineSyntax)
                             .ToList();
 
-                        // first line
-                        if (!before.Any())
-                        {
-                            completions.Add(ToCompletion("User-agent"));
-                        }
+                        // compute completions
+                        AugmentCompletionsBasedOnLinesBefore(before, completions);
 
-                        // right after User-agent
-                        else if (before.All(l => l.NameToken.Value.Equals("User-agent", StringComparison.InvariantCultureIgnoreCase)))
-                        {
-                            completions.Add(ToCompletion("User-agent"));
-                            completions.Add(ToCompletion("Allow"));
-                            completions.Add(ToCompletion("Disallow"));
-                            completions.Add(ToCompletion("Sitemap"));
-                            completions.Add(ToCompletion("Host"));
-                            completions.Add(ToCompletion("Crawl-delay"));
-                        }
-
-                        // any other case
-                        else
-                        {
-                            completions.Add(ToCompletion("Allow"));
-                            completions.Add(ToCompletion("Disallow"));
-                            completions.Add(ToCompletion("Sitemap"));
-
-                            if (!before.Any(l => l.NameToken.Value.Equals("Host", StringComparison.InvariantCultureIgnoreCase)))
-                                completions.Add(ToCompletion("Host"));
-
-                            if (!before.Any(l => l.NameToken.Value.Equals("Crawl-delay", StringComparison.InvariantCultureIgnoreCase)))
-                                completions.Add(ToCompletion("Crawl-delay"));
-                        }
-                        
                         completionSets.Add(
                             new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>())
                         );
                     }
+                }
+
+                // blank line
+                else
+                {
+                    ITextSnapshotLine line = triggerPoint.Value.GetContainingLine();
+
+                    // check whether the trigger point is in comment
+                    int commentIndex = line.GetText().IndexOf(RobotsTxtSyntaxFacts.Comment);
+                    if (commentIndex != -1)
+                    if (commentIndex < (triggerPoint.Value - line.Start))
+                        return;
+
+                    IList<Completion> completions = new List<Completion>();
+
+                    // find last line before
+                    RobotsTxtLineSyntax lineBefore = root.Records
+                        .SelectMany(r => r.Lines)
+                        .TakeWhile(l => l.Span.End < triggerPoint.Value)
+                        .LastOrDefault();
+
+                    // no line before
+                    if (lineBefore == null)
+                    {
+                        completions.Add(ToCompletion("User-agent"));
+                    }
+
+                    // there is a line before
+                    else
+                    {
+                        // same record
+                        if (lineBefore.Span.Start.GetContainingLine().LineNumber ==
+                            triggerPoint.Value.GetContainingLine().LineNumber - 1)
+                        {
+                            // find lines before
+                            var before = lineBefore.Record.Lines
+                                .TakeWhile(l => l != lineSyntax)
+                                .ToList();
+
+                            // compute completions
+                            AugmentCompletionsBasedOnLinesBefore(before, completions);
+                        }
+
+                        // new record
+                        else
+                        {
+                            completions.Add(ToCompletion("User-agent"));
+                        }
+                    }
+
+                    var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(triggerPoint.Value, triggerPoint.Value), SpanTrackingMode.EdgeInclusive);
+
+                    completionSets.Add(
+                        new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>())
+                    );
+                }
+            }
+
+            private void AugmentCompletionsBasedOnLinesBefore(IReadOnlyList<RobotsTxtLineSyntax> before, IList<Completion> completions)
+            {
+                // first line
+                if (!before.Any())
+                {
+                    completions.Add(ToCompletion("User-agent"));
+                }
+
+                // right after User-agent
+                else if (before.All(l => l.NameToken.Value.Equals("User-agent", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    completions.Add(ToCompletion("User-agent"));
+                    completions.Add(ToCompletion("Allow"));
+                    completions.Add(ToCompletion("Disallow"));
+                    completions.Add(ToCompletion("Sitemap"));
+                    completions.Add(ToCompletion("Host"));
+                    completions.Add(ToCompletion("Crawl-delay"));
+                }
+
+                // any other case
+                else
+                {
+                    completions.Add(ToCompletion("Allow"));
+                    completions.Add(ToCompletion("Disallow"));
+                    completions.Add(ToCompletion("Sitemap"));
+
+                    if (!before.Any(l => l.NameToken.Value.Equals("Host", StringComparison.InvariantCultureIgnoreCase)))
+                        completions.Add(ToCompletion("Host"));
+
+                    if (!before.Any(l => l.NameToken.Value.Equals("Crawl-delay", StringComparison.InvariantCultureIgnoreCase)))
+                        completions.Add(ToCompletion("Crawl-delay"));
                 }
             }
 

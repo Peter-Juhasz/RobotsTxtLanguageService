@@ -141,7 +141,6 @@ namespace RobotsTxtLanguageService.CodeCompletion
                     return;
 
                 _currentSession.SelectedCompletionSet.SelectBestMatch();
-                _currentSession.SelectedCompletionSet.Recalculate();
             }
 
             bool Cancel()
