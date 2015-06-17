@@ -65,6 +65,7 @@
     <Compile Include="Diagnostics\RobotsTxtLineSyntaxAnalyzer.cs" />
     <Compile Include="Documentation\RobotsTxtDocumentation.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Formatting\RobotsTxtAutomaticFormatter.cs" />
     <Compile Include="Outlining\RobotsTxtOutliningTagger.cs" />
     <Compile Include="QuickInfo\RobotsTxtQuickInfoProvider.cs" />
     <Compile Include="QuickInfo\QuickInfoContent.cs" />

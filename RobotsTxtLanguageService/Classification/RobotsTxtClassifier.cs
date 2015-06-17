@@ -24,76 +24,13 @@ namespace RobotsTxtLanguageService
         /// <param name="registry">Classification registry.</param>
         public RobotsTxtClassifier(ITextBuffer buffer, ISyntacticParser syntacticParser, IClassificationTypeRegistryService registry)
         {
-            _syntacticParser = buffer.Properties.GetOrCreateSingletonProperty<ISyntacticParser>(() => syntacticParser);
+            buffer.Properties.AddProperty(typeof(ISyntacticParser), syntacticParser);
 
             _commentType = registry.GetClassificationType(PredefinedClassificationTypeNames.Comment);
             _delimiterType = registry.GetClassificationType("RobotsTxt/Delimiter");
             _propertyNameType = registry.GetClassificationType("RobotsTxt/PropertyName");
             _propertyValueType = registry.GetClassificationType("RobotsTxt/PropertyValue");
-            
-            buffer.ChangedHighPriority += OnBufferChanged;
         }
-
-        private readonly ISyntacticParser _syntacticParser;
-
-        private void OnBufferChanged(object sender, TextContentChangedEventArgs e)
-        {
-            ITextBuffer buffer = sender as ITextBuffer;
-            
-            // format
-            if (e.Changes.Count == 1)
-            {
-                ITextChange change = e.Changes.Single();
-
-                if (change.OldLength == 0 && change.NewLength == 1)
-                {
-                    if (change.NewText == ":")
-                    {
-                        SyntaxTree syntaxTree = buffer.GetSyntaxTree();
-                        RobotsTxtDocumentSyntax root = syntaxTree.Root as RobotsTxtDocumentSyntax;
-
-                        RobotsTxtLineSyntax lineSyntax = root.Records
-                            .SelectMany(r => r.Lines)
-                            .FirstOrDefault(p => p.DelimiterToken.Span.Span == change.NewSpan);
-
-                        if (lineSyntax != null)
-                        {
-                            using (ITextEdit edit = buffer.CreateEdit())
-                            {
-                                // fix indent
-                                // find property before
-                                RobotsTxtLineSyntax before = lineSyntax.Record.Lines
-                                .TakeWhile(p => p != lineSyntax)
-                                .LastOrDefault();
-
-                                // reference point
-                                if (before != null)
-                                {
-                                    SnapshotPoint referencePoint = before.NameToken.Span.Span.Start;
-
-                                    // compare
-                                    ITextSnapshotLine referenceLine = referencePoint.GetContainingLine();
-                                    ITextSnapshotLine line = lineSyntax.DelimiterToken.Span.Span.End.GetContainingLine();
-
-                                    SnapshotSpan referenceIndent = new SnapshotSpan(referenceLine.Start, referencePoint);
-                                    SnapshotSpan indent = new SnapshotSpan(line.Start, lineSyntax.NameToken.Span.Span.Start);
-                                
-                                    if (indent.GetText() != referenceIndent.GetText())
-                                        edit.Replace(indent, referenceIndent.GetText());
-                                }
-
-                                // remove white space before ':'
-                                if (lineSyntax.NameToken.Span.Span.End != lineSyntax.DelimiterToken.Span.Span.Start)
-                                    edit.Delete(new SnapshotSpan(lineSyntax.NameToken.Span.Span.End, lineSyntax.DelimiterToken.Span.Span.Start));
-
-                                edit.Apply();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
 
 #pragma warning disable 67
 

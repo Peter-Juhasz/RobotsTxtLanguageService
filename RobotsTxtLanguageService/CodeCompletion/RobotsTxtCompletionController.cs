@@ -40,7 +40,6 @@ namespace RobotsTxtLanguageService.CodeCompletion
                 return;
 
             string fileName = Path.GetFileName(document.FilePath);
-
             if (!fileName.Equals("robots.txt", StringComparison.InvariantCultureIgnoreCase))
                 return;
 
