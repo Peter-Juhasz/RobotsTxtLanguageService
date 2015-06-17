@@ -74,7 +74,7 @@
     <Compile Include="SuggestedActions\RobotsTxtSuggestedActions.cs" />
     <Compile Include="Syntax\ISyntacticParser.cs" />
     <Compile Include="Syntax\RobotsTxtDocumentSyntax.cs" />
-    <Compile Include="Syntax\RobotsTxtLexicalParser.cs" />
+    <Compile Include="Syntax\RobotsTxtSyntacticParser.cs" />
     <Compile Include="Syntax\RobotsTxtLineSyntax.cs" />
     <Compile Include="Syntax\RobotsTxtRecordSyntax.cs" />
     <Compile Include="Syntax\SnapshotToken.cs" />

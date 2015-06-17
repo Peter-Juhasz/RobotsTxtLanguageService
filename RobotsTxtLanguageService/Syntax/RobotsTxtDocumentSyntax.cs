@@ -10,11 +10,18 @@ namespace RobotsTxtLanguageService.Syntax
         public RobotsTxtDocumentSyntax()
         {
             this.Records = new List<RobotsTxtRecordSyntax>();
+            this.LeadingTrivia = new List<SnapshotToken>();
+            this.TrailingTrivia = new List<SnapshotToken>();
         }
 
         public ITextSnapshot Snapshot { get; set; }
 
         public IList<RobotsTxtRecordSyntax> Records { get; set; }
+
+
+        public IList<SnapshotToken> LeadingTrivia { get; set; }
+
+        public IList<SnapshotToken> TrailingTrivia { get; set; }
 
 
         public override SnapshotSpan Span
@@ -55,7 +62,10 @@ namespace RobotsTxtLanguageService.Syntax
 
         public override IEnumerable<SnapshotToken> GetTokens()
         {
-            return this.Records.SelectMany(s => s.GetTokens());
+            return (this.LeadingTrivia)
+                .Concat(this.Records.SelectMany(s => s.GetTokens()))
+                .Concat(this.TrailingTrivia)
+            ;
         }
     }
 }

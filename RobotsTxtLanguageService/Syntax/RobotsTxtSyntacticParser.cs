@@ -9,10 +9,10 @@ using System.Linq;
 namespace RobotsTxtLanguageService.Syntax
 {
     [Export("RobotsTxt", typeof(ISyntacticParser))]
-    internal sealed class RobotsTxtLexicalParser : ISyntacticParser
+    internal sealed class RobotsTxtSyntacticParser : ISyntacticParser
     {
         [ImportingConstructor]
-        public RobotsTxtLexicalParser(IClassificationTypeRegistryService registry)
+        public RobotsTxtSyntacticParser(IClassificationTypeRegistryService registry)
         {
             _commentType = registry.GetClassificationType(PredefinedClassificationTypeNames.Comment);
             _delimiterType = registry.GetClassificationType("RobotsTxt/Delimiter");
@@ -111,9 +111,15 @@ namespace RobotsTxtLanguageService.Syntax
                 lastLineWasBlankLine = isBlankLine;
             }
 
-            if (currentRecord != null && leadingTrivia.Any())
-                foreach (var trivia in leadingTrivia)
-                    currentRecord.TrailingTrivia.Add(trivia);
+            if (leadingTrivia.Any())
+            {
+                if (currentRecord.Lines.Any())
+                    foreach (var trivia in leadingTrivia)
+                        currentRecord.TrailingTrivia.Add(trivia);
+                else
+                    foreach (var trivia in leadingTrivia)
+                        root.LeadingTrivia.Add(trivia);
+            }
 
             if (currentRecord.Lines.Any())
                 root.Records.Add(currentRecord);
