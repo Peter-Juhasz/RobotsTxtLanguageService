@@ -61,7 +61,28 @@ namespace RobotsTxtLanguageService.CodeFixes
 
         private ITextEdit FixByMoving(RobotsTxtLineSyntax line, RobotsTxtRecordSyntax record)
         {
-            throw new NotImplementedException();
+            ITextBuffer buffer = line.Record.Document.Snapshot.TextBuffer;
+
+            // default insertion point at record start
+            SnapshotPoint insertionPoint = record.Span.Start;
+
+            // find last User-agent line
+            var last = record.Lines
+                .TakeWhile(l => l.NameToken.Value.Equals("User-agent", StringComparison.InvariantCultureIgnoreCase))
+                .LastOrDefault();
+
+            if (last != null) // override insertion point
+                insertionPoint = last.Span.End.GetContainingLine().EndIncludingLineBreak;
+
+            // move line up
+            ITextEdit edit = buffer.CreateEdit();
+            edit.Insert(
+                insertionPoint,
+                line.Span.Start.GetContainingLine().GetTextIncludingLineBreak()
+            );
+            edit.Delete(line.Span.Start.GetContainingLine().ExtentIncludingLineBreak);
+
+            return edit;
         }
     }
 }
