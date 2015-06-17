@@ -85,7 +85,7 @@ namespace RobotsTxtLanguageService.CodeCompletion
                         }
 
                         // right after User-agent
-                        if (before.All(l => l.NameToken.Value.Equals("User-agent", StringComparison.InvariantCultureIgnoreCase)))
+                        else if (before.All(l => l.NameToken.Value.Equals("User-agent", StringComparison.InvariantCultureIgnoreCase)))
                         {
                             completions.Add(ToCompletion("User-agent"));
                             completions.Add(ToCompletion("Allow"));
