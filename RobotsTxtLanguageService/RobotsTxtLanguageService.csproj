@@ -47,6 +47,7 @@
     <Compile Include="Classification\RobotsTxtClassifierProvider.cs" />
     <Compile Include="CodeCompletion\RobotsTxtCompletionController.cs" />
     <Compile Include="CodeCompletion\RobotsTxtCompletionSource.cs" />
+    <Compile Include="CodeFixes\RemoveLine.cs" />
     <Compile Include="CodeFixes\InsertMissingNameValueDelimiter.cs" />
     <Compile Include="CodeFixes\ICodeFixProvider.cs" />
     <Compile Include="CodeFixes\ConvertUniversalMatchToRoot.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Diagnostics\DiagnosticErrorTag.cs" />
     <Compile Include="Diagnostics\IDiagnosticAnalyzer.cs" />
     <Compile Include="Diagnostics\MultipleDeclarationsOfUniqueField.cs" />
+    <Compile Include="Diagnostics\InformationDisclosure.cs" />
     <Compile Include="Diagnostics\UserAgentMustBeTheFirstLineOfARecord.cs" />
     <Compile Include="Diagnostics\RobotsTxtErrorTagger.cs" />
     <Compile Include="Diagnostics\ISyntaxNodeAnalyzer.cs" />

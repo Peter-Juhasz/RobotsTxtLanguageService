@@ -10,7 +10,7 @@ namespace RobotsTxtLanguageService.Diagnostics
     [ExportDiagnosticAnalyzer]
     internal sealed class RobotsTxtLineNameAnalyzer : ISyntaxNodeAnalyzer<RobotsTxtLineSyntax>
     {
-        public const string UnknownLine = nameof(UnknownLine);
+        public const string UnknownField = nameof(UnknownField);
         
         public IEnumerable<ITagSpan<IErrorTag>> Analyze(RobotsTxtLineSyntax line)
         {
@@ -23,7 +23,7 @@ namespace RobotsTxtLanguageService.Diagnostics
             {
                 yield return new TagSpan<IErrorTag>(
                     line.NameToken.Span.Span,
-                    new DiagnosticErrorTag(PredefinedErrorTypeNames.OtherError, UnknownLine, $"Unknown line '{name}'")
+                    new DiagnosticErrorTag(PredefinedErrorTypeNames.OtherError, UnknownField, $"Unknown field '{name}'")
                 );
             }
         }
