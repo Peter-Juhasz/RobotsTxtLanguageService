@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using RobotsTxtLanguageService.Syntax;
@@ -28,6 +29,9 @@ namespace RobotsTxtLanguageService.Formatting
         [Import]
         private ITextDocumentFactoryService TextDocumentFactoryService;
 
+        [Import]
+        private ITextBufferUndoManagerProvider _textBufferUndoManagerProvider;
+
 #pragma warning restore 169
 
 
@@ -46,7 +50,9 @@ namespace RobotsTxtLanguageService.Formatting
                 return;
             
             // register command filter
-            CommandFilter filter = new CommandFilter(view);
+            CommandFilter filter = new CommandFilter(view,
+                _textBufferUndoManagerProvider.GetTextBufferUndoManager(view.TextBuffer).TextBufferUndoHistory
+            );
 
             IOleCommandTarget next;
             ErrorHandler.ThrowOnFailure(textViewAdapter.AddCommandFilter(filter, out next));
@@ -56,18 +62,20 @@ namespace RobotsTxtLanguageService.Formatting
 
         private sealed class CommandFilter : IOleCommandTarget
         {
-            public CommandFilter(ITextView view)
+            public CommandFilter(ITextView view, ITextUndoHistory undoHistory)
             {
                 _textView = view;
+                _undoHistory = undoHistory;
             }
 
             private readonly ITextView _textView;
+            private readonly ITextUndoHistory _undoHistory;
 
 
             public void OnCharTyped(char @char)
             {
                 // format on ':'
-                if (@char == ':')
+                if (@char == RobotsTxtSyntaxFacts.NameValueDelimiter)
                 {
                     ITextBuffer buffer = _textView.TextBuffer;
 
@@ -82,35 +90,40 @@ namespace RobotsTxtLanguageService.Formatting
 
                     if (lineSyntax != null)
                     {
-                        using (ITextEdit edit = buffer.CreateEdit())
+                        using (ITextUndoTransaction transaction = _undoHistory.CreateTransaction("Automatic Formatting"))
                         {
-                            // fix indent
-                            // find property before
-                            RobotsTxtLineSyntax before = lineSyntax.Record.Lines
-                            .TakeWhile(p => p != lineSyntax)
-                            .LastOrDefault();
-
-                            // reference point
-                            if (before != null)
+                            using (ITextEdit edit = buffer.CreateEdit())
                             {
-                                SnapshotPoint referencePoint = before.NameToken.Span.Span.Start;
+                                // fix indent
+                                // find property before
+                                RobotsTxtLineSyntax before = lineSyntax.Record.Lines
+                                .TakeWhile(p => p != lineSyntax)
+                                .LastOrDefault();
 
-                                // compare
-                                ITextSnapshotLine referenceLine = referencePoint.GetContainingLine();
-                                ITextSnapshotLine line = lineSyntax.DelimiterToken.Span.Span.End.GetContainingLine();
+                                // reference point
+                                if (before != null)
+                                {
+                                    SnapshotPoint referencePoint = before.NameToken.Span.Span.Start;
 
-                                SnapshotSpan referenceIndent = new SnapshotSpan(referenceLine.Start, referencePoint);
-                                SnapshotSpan indent = new SnapshotSpan(line.Start, lineSyntax.NameToken.Span.Span.Start);
+                                    // compare
+                                    ITextSnapshotLine referenceLine = referencePoint.GetContainingLine();
+                                    ITextSnapshotLine line = lineSyntax.DelimiterToken.Span.Span.End.GetContainingLine();
 
-                                if (indent.GetText() != referenceIndent.GetText())
-                                    edit.Replace(indent, referenceIndent.GetText());
+                                    SnapshotSpan referenceIndent = new SnapshotSpan(referenceLine.Start, referencePoint);
+                                    SnapshotSpan indent = new SnapshotSpan(line.Start, lineSyntax.NameToken.Span.Span.Start);
+
+                                    if (indent.GetText() != referenceIndent.GetText())
+                                        edit.Replace(indent, referenceIndent.GetText());
+                                }
+
+                                // remove white space before ':'
+                                if (lineSyntax.NameToken.Span.Span.End != lineSyntax.DelimiterToken.Span.Span.Start)
+                                    edit.Delete(new SnapshotSpan(lineSyntax.NameToken.Span.Span.End, lineSyntax.DelimiterToken.Span.Span.Start));
+
+                                edit.Apply();
                             }
 
-                            // remove white space before ':'
-                            if (lineSyntax.NameToken.Span.Span.End != lineSyntax.DelimiterToken.Span.Span.Start)
-                                edit.Delete(new SnapshotSpan(lineSyntax.NameToken.Span.Span.End, lineSyntax.DelimiterToken.Span.Span.Start));
-
-                            edit.Apply();
+                            transaction.Complete();
                         }
                     }
                 }
