@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RobotsTxtLanguageService.Semantics;
+using System;
 using System.Collections.Generic;
 
 namespace RobotsTxtLanguageService.Documentation
@@ -18,5 +19,21 @@ namespace RobotsTxtLanguageService.Documentation
             { "host", "Allows websites with multiple mirrors to specify their preferred domain." },
             { "sitemap", "Specifies the location of the Sitemap." },
         };
+
+
+        public static string GetDocumentation(RobotsTxtFieldSymbol field)
+        {
+            string documentation;
+            if (!BuiltInRecordDocumentations.TryGetValue(field.Name, out documentation))
+            if (!ExtensionRecordDocumentations.TryGetValue(field.Name, out documentation))
+                documentation = null;
+
+            return documentation;
+        }
+
+        public static string GetParameterDocumentation(RobotsTxtFieldSymbol field)
+        {
+            return null;
+        }
     }
 }

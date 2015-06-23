@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.Text;
+using RobotsTxtLanguageService.Semantics;
 
 namespace RobotsTxtLanguageService.Syntax
 {
@@ -13,6 +14,11 @@ namespace RobotsTxtLanguageService.Syntax
         public ITextSnapshot Snapshot { get; private set; }
 
         public SyntaxNode Root { get; private set; }
+
+        public ISemanticModel GetSemanticModel()
+        {
+            return null;
+        }
     }
     
     public static class TextBufferExtensions

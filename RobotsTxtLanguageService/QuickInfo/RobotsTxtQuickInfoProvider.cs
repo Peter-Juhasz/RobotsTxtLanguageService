@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using RobotsTxtLanguageService.Documentation;
+using RobotsTxtLanguageService.Semantics;
 
 namespace RobotsTxtLanguageService.QuickInfo
 {
@@ -82,15 +83,15 @@ namespace RobotsTxtLanguageService.QuickInfo
                 applicableToSpan = null;
 
                 // find section
-                RobotsTxtLineSyntax record = root.Records
+                RobotsTxtLineSyntax line = root.Records
                     .SelectMany(r => r.Lines)
                     .FirstOrDefault(s => s.NameToken.Span.Span.Contains(point));
                 
-                if (record != null)
+                if (line != null)
                 {
                     IClassificationFormatMap formatMap = _classificationFormatMapService.GetClassificationFormatMap(session.TextView);
 
-                    string recordName = record.NameToken.Value;
+                    string fieldName = line.NameToken.Value;
                     
                     // get glyph
                     var glyph = _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupProperty, StandardGlyphItem.GlyphItemPublic);
@@ -98,16 +99,14 @@ namespace RobotsTxtLanguageService.QuickInfo
                     var format = formatMap.GetTextProperties(classificationType);
 
                     // construct content
-                    string documentation;
-                    if (!RobotsTxtDocumentation.BuiltInRecordDocumentations.TryGetValue(recordName, out documentation))
-                    if (!RobotsTxtDocumentation.ExtensionRecordDocumentations.TryGetValue(recordName, out documentation))
-                        documentation = null;
+                    ISemanticModel model = syntax.GetSemanticModel();
+                    var field = model.GetFieldSymbol(line);
 
                     var content = new QuickInfoContent
                     {
                         Glyph = glyph,
-                        Signature = new Run(recordName) { Foreground = format.ForegroundBrush },
-                        Documentation = documentation,
+                        Signature = new Run(field.Name) { Foreground = format.ForegroundBrush },
+                        Documentation = RobotsTxtDocumentation.GetDocumentation(field),
                     };
                     
                     // add to session
@@ -118,7 +117,7 @@ namespace RobotsTxtLanguageService.QuickInfo
                             ContentTemplate = Template,
                         }
                     );
-                    applicableToSpan = snapshot.CreateTrackingSpan(record.NameToken.Span.Span, SpanTrackingMode.EdgeInclusive);
+                    applicableToSpan = snapshot.CreateTrackingSpan(line.NameToken.Span.Span, SpanTrackingMode.EdgeInclusive);
                     return;
                 }
             }
