@@ -33,7 +33,7 @@ namespace RobotsTxtLanguageService.Diagnostics
                 {
                     yield return new TagSpan<IErrorTag>(
                         line.ValueToken.Span.Span,
-                        new DiagnosticErrorTag(PredefinedErrorTypeNames.OtherError, Id, $"Possible information disclosure: '{value}'{Environment.NewLine}Do not expose private resources in robots.txt. Control indexing in the markup and in the search engine instead.")
+                        new DiagnosticErrorTag(PredefinedErrorTypeNames.OtherError, Id, $"Possible information disclosure: '{value}'{Environment.NewLine}Do not expose private resources in robots.txt. Control indexing in the markup and directly in the search engine instead.")
                     );
                 }
             }
